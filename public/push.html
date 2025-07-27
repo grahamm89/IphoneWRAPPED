@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Dishwasher Helper</title>
+
+  <link rel="manifest" href="/manifest.webmanifest" />
+  <meta name="theme-color" content="#0073e6" />
+
+  <!-- iOS PWA niceties -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <link rel="apple-touch-icon" href="/icon-192.png">
+
+  <style>
+    body { font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif; margin: 2rem; }
+    h1 { margin-bottom: 0.5rem; }
+    .card { border: 1px solid #e5e7eb; border-radius: 12px; padding: 1rem; max-width: 560px; }
+    label { display: block; margin-top: 0.75rem; }
+    input { width: 100%; padding: 0.5rem; border: 1px solid #d1d5db; border-radius: 8px; }
+    button { margin-top: 1rem; padding: 0.6rem 1rem; border-radius: 10px; border: none; background: #0073e6; color: white; font-weight: 600; }
+    button:disabled { opacity: 0.6; }
+    .muted { color: #6b7280; }
+  </style>
+</head>
+<body>
+  <h1>Dishwasher Helper PWA</h1>
+  <p class="muted">Install to Home Screen on iOS for push notifications.</p>
+
+  <div class="card">
+    <button id="subscribeBtn">Subscribe to notifications</button>
+
+    <form id="notifyForm">
+      <label>Title <input id="title" placeholder="Title" /></label>
+      <label>Body <input id="body" placeholder="Body" /></label>
+      <label>Click URL <input id="url" placeholder="/" /></label>
+      <button type="submit">Send test notification</button>
+    </form>
+  </div>
+
+  <script type="module" src="/script.js"></script>
+  <script type="module">
+    // simple form to test /notify
+    document.getElementById('notifyForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const payload = {
+        title: document.getElementById('title').value || 'Hello',
+        body: document.getElementById('body').value || 'It works!',
+        url: document.getElementById('url').value || '/'
+      };
+      const res = await fetch('/notify', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      const j = await res.json();
+      console.log(j);
+      alert(`Sent: ${j.successCount} ok, ${j.failureCount} failed`);
+    });
+  </script>
+</body>
+</html>
